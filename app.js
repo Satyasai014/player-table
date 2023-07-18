@@ -94,3 +94,25 @@ app.get("/matches/:matchId/players", async (request, response) => {
    WHERE player_match_score.match_id = ${matchId};`;
   response.send(await db.all(quwer));
 });
+
+app.get("/players/:playerId/playerScores", async (request, response) => {
+  const { playerId } = request.params;
+  console.log(await playerId);
+  const quwer = `
+   SELECT
+     player_match_score.player_id AS playerId,
+     player_details.player_name AS playerName,
+     SUM(player_match_score.score) AS totalScore,
+     SUM(player_match_score.fours) AS totalFours,
+     SUM(player_match_score.sixes) AS totalSixes
+   FROM
+   player_details
+   JOIN
+   player_match_score
+   ON player_details.player_id=player_match_score.player_id
+   WHERE
+   player_match_score.player_id =${playerId};`;
+  response.send(await db.all(quwer));
+});
+
+module.exports = app;
